@@ -31,21 +31,10 @@ fn setup(
             },
             Pickable::default(),
         ))
-        .observe(
-            |_click: Trigger<Pointer<Click>>,
-             mut commands: Commands,
-             mut meshes: ResMut<Assets<Mesh>>,
-             mut materials: ResMut<Assets<StandardMaterial>>,
-             mut num: Local<usize>| {
-                commands.spawn(PbrBundle {
-                    mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
-                    material: materials.add(Color::srgb_u8(124, 144, 255)),
-                    transform: Transform::from_xyz(0.0, 0.5 + 1.1 * *num as f32, 0.0),
-                    ..default()
-                });
-                *num += 1;
-            },
-        )
+        .observe(|click: Trigger<Pointer<Click>>| {
+            let click = click.event();
+            println!("{click:?}");
+        })
         .observe(|evt: Trigger<Pointer<Out>>, mut texts: Query<&mut Text>| {
             let mut text = texts.get_mut(evt.entity()).unwrap();
             let first = text.sections.first_mut().unwrap();
@@ -69,10 +58,21 @@ fn setup(
             },
             Pickable::default(),
         ))
-        .observe(|click: Trigger<Pointer<Click>>| {
-            let click = click.event();
-            println!("{click:?}");
-        });
+        .observe(
+            |_click: Trigger<Pointer<Click>>,
+             mut commands: Commands,
+             mut meshes: ResMut<Assets<Mesh>>,
+             mut materials: ResMut<Assets<StandardMaterial>>,
+             mut num: Local<usize>| {
+                commands.spawn(PbrBundle {
+                    mesh: meshes.add(Cuboid::new(1.0, 1.0, 1.0)),
+                    material: materials.add(Color::srgb_u8(124, 144, 255)),
+                    transform: Transform::from_xyz(0.0, 0.5 + 1.1 * *num as f32, 0.0),
+                    ..default()
+                });
+                *num += 1;
+            },
+        );
     // light
     commands.spawn(PointLightBundle {
         point_light: PointLight {
